@@ -2,7 +2,7 @@ name: Phoenix Production CI Pipeline
 
 on:
   push:
-    branches:[ "main" ]
+    branches: [ "main" ]
 
 jobs:
   build-and-secure:

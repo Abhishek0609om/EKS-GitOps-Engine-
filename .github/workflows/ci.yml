@@ -1,0 +1,52 @@
+name: Phoenix Production CI Pipeline
+
+on:
+  push:
+    branches:[ "main" ]
+
+jobs:
+  build-and-secure:
+    name: Build, Scan, and ship Container
+    runs-on: ubuntu-latest
+   
+
+    steps:
+    # clone the repo into the runner machine
+      - name: checkout code 
+        uses: actions/checkout@v4
+
+    # Initialize your aws credentials securely 
+      - name: configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+    # log into your amazon ecr registry
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+    # run the Trivy security scanner on your raw code workspace 
+      - name: Run TRIVY Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table' 
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+
+      # Build the docker image and push to ECR
+      - name: Build and Push to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: phoenix-app
+          IMAGE_TAG: latest
+        run: |
+          # Build the Docker image
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          
+          # Push the Docker image to ECR
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

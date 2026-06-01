@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
       - name: phoenix-app
-        image: nginx:alpine
-        imagePullPolicy: Always
+        image: phoenix-app:local 
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
         - containerPort: 8000

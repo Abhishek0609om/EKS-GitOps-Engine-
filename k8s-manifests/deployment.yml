@@ -13,26 +13,20 @@ spec:
       app: phoenix-app
   template:
     metadata:
-      Labels:
-        app: Phoenix-app
-      spec:
-        containers:
-        - name: phoenix-app
-          image: 095055159123.dkr.ecr.ap-south-1.amazonaws.com/phoenix-app:latest
-          imagePullPolicy: Always
-          ports:
-          - containerPort: 5000
-          - containerPort: 8000
-          resources:
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
-            requests:
-              cpu: "250m"
-              memory: "256Mi"
-
-Outputs:
-
-cluster_endpoint = "https://amazonaws.com"
-cluster_name = "phoenix-cluster"
-ecr_repository_url = "095055159123.dkr.ecr.ap-south-1.amazonaws.com/phoenix-app" <── COPY THIS EXACT STRING
+      labels:
+        app: phoenix-app
+    spec:
+      containers:
+      - name: phoenix-app
+        image: nginx:alpine
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        - containerPort: 8000
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"

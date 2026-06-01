@@ -1,4 +1,4 @@
-apiversion: v1
+apiversion: V1
 kind: Service
 metadata:
   name: phoenix-app-service

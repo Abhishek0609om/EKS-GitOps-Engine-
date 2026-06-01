@@ -1,4 +1,4 @@
-apiversion: apps/v1
+apiversion: apps/V1
 kind: Deployment
 metadata:
   name: phoniex-deployment

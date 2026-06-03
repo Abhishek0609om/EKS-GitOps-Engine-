@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: phoniex-deployment
+  name: phoenix-deployment
   labels:
     app: phoenix-app
 spec:
 
-# lancuh 2 replicas of the application
+# launch 2 replicas of the application
   replicas: 2
   selector:
     matchLabels:

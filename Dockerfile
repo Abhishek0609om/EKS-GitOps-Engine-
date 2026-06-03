@@ -15,4 +15,4 @@ ENV PATH=/root/.local/bin:$PATH
 
 EXPOSE 5000 8000
 
-CMD ["python" , "src/app.py"]
+CMD ["python" , "app.py"]

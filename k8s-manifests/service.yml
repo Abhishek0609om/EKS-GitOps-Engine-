@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: phoenix-app-service
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: phoenix-app
   ports:

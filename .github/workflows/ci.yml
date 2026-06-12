@@ -8,8 +8,6 @@ jobs:
   build-and-secure:
     name: Build, Scan, and ship Container
     runs-on: ubuntu-latest
-   
-
     steps:
     # clone the repo into the runner machine
       - name: checkout code 
@@ -30,7 +28,7 @@ jobs:
 
     # run the Trivy security scanner on your raw code workspace 
       - name: Run TRIVY Scan
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.28.0
         with:
           scan-type: 'fs'
           scan-ref: '.'

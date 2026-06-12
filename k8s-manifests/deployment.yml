@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
       - name: phoenix-app
-        image: phoenix-app:local 
-        imagePullPolicy: IfNotPresent
+        image: 095055159123.dkr.ecr.ap-south-1.amazonaws.com/phoenix-app:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
         - containerPort: 8000

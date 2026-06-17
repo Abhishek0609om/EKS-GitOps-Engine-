@@ -5,3 +5,4 @@ terraform.tfstate
 terraform.tfstate.backup
 kind
 kubectl
+terraform.tfvars

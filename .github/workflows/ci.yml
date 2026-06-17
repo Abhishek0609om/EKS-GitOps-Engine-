@@ -56,11 +56,15 @@ jobs:
           # Push the Docker image to ECR
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
+      # Debug AWS Identity
       - name: Debug AWS Identity
-        run: aws sts get-caller-identity
+        run: |
+          aws sts get-caller-identity
 
+      # Debug EKS Access
       - name: Debug EKS Access
-        run: aws eks list-clusters --region ap-south-1
+        run: |
+          aws eks list-clusters --region ap-south-1
 
       # Deploy to EKS
       - name: Deploy to EKS
@@ -72,6 +76,7 @@ jobs:
           AWS_REGION: ap-south-1
         run: |
           aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-          kubectl apply -f k8s-manifests/
+          kubectl get nodes
+          kubectl get deployments
           kubectl set image deployment/phoenix-deployment phoenix-app=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           kubectl rollout status deployment/phoenix-deployment

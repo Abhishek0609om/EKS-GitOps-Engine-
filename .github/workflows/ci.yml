@@ -77,6 +77,6 @@ jobs:
         run: |
           aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
           kubectl get nodes
-          kubectl get deployments
+          kubectl apply -f k8s-manifests/
           kubectl set image deployment/phoenix-deployment phoenix-app=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          kubectl rollout status deployment/phoenix-deployment
+          kubectl rollout status deployment/phoenix-deployment 

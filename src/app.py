@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Advanced Telemetry Trackers
 REQUEST_COUNT = Counter('request_count', 'Total requests handled by Phoenix App', ['endpoint', 'status'])
 REQUEST_LATENCY = Histogram('request_latency_seconds', 'Time spent processing request', ['endpoint'])
-
+#onemore
 # Beautiful modern landing page HTML string
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -27,7 +27,7 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <div class="card">
-        <h1>🦅 Phoenix Application Grid</h1>
+        <h1>🦅 Phoenix Application Grid v2</h1>
         <p>Your high-traffic GitOps cluster node is serving live requests perfectly.</p>
         <span class="badge">System Healthy</span>
         <div class="footer">Server Timestamp: {{ timestamp }}</div>

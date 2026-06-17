@@ -2,6 +2,13 @@
 
 ![alt text](Images/arc_1.png)
 
+//
+kind create cluster --config kind-config.yaml
+docker build -t phoenix-app:local .
+kind load docker-image phoenix-app:local --name phoenix
+kubectl apply -f k8s-manifests/
+//
+
 A production-style GitOps platform demonstrating Infrastructure as Code (IaC), Continuous Integration/Continuous Deployment (CI/CD), Kubernetes orchestration, observability, and security scanning.
 
 This project was designed to showcase modern DevOps practices using Terraform, AWS, Docker, Kubernetes, ArgoCD, Prometheus, Grafana, GitHub Actions, and Trivy.

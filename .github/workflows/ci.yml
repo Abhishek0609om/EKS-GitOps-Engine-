@@ -13,6 +13,13 @@ jobs:
       - name: checkout code 
         uses: actions/checkout@v4
 
+    # Install kubectl
+      - name: Setup kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
     # Initialize your aws credentials securely 
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -48,3 +55,16 @@ jobs:
           
           # Push the Docker image to ECR
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      # Deploy to EKS
+      - name: Deploy to EKS
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: phoenix-app
+          IMAGE_TAG: latest
+          CLUSTER_NAME: phoenix-cluster
+          AWS_REGION: ap-south-1
+        run: |
+          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+          kubectl set image deployment/phoenix-deployment phoenix-app=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          kubectl rollout status deployment/phoenix-deployment 

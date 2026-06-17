@@ -1,8 +1,10 @@
 # Phoenix DevOps Platform — Agent Guide
 
-## Local Development (Kind — no AWS costs)
+## Project scope
 
-This project runs **completely locally** via Kind. The Terraform in `infrastructure/` provisions real AWS resources and **will cost money** if applied.
+This repo provisions AWS infra via Terraform and deploys a Flask app to it. **There is no code that installs ArgoCD, Prometheus, or Grafana** — those are architectural concepts in the README only. The only Prometheus code is the Python client (`prometheus-client` in `requirements.txt`, imported in `src/app.py:2`) for exporting app metrics. No Helm charts, no install scripts, no Terraform resources exist for them.
+
+## Local Development (Kind — no AWS costs)
 
 ```powershell
 kind create cluster --name phoenix --config kind-config.yaml
@@ -13,32 +15,34 @@ kubectl port-forward deployment/phoenix-deployment 5000:5000
 kubectl port-forward svc/phoenix-app-service 8080:8080
 ```
 
-`k8s-manifests/deployment.yml` currently references an **AWS ECR URL** (for EKS deployment). For local Kind dev, change `image` back to `phoenix-app:local` and `imagePullPolicy` to `IfNotPresent`.
+`k8s-manifests/deployment.yml` currently uses `image: phoenix-app:local` with `imagePullPolicy: IfNotPresent` — already set up for local Kind dev. For EKS deployment, change these to the ECR URL and `Always`.
 
 ## Architecture
 
-- **App**: `src/app.py` — Flask on `:5000`, Prometheus metrics on `:8000`. Unused import: `jsonify` on line 1.
+- **App**: `src/app.py` — Flask on `:5000`, Prometheus `/metrics` endpoint on `:8000`. Unused import: `jsonify` on line 1.
 - **Docker**: Multi-stage build (`python:3.11-slim`), exposes 5000/8000
-- **K8s manifests**: `deployment.yml` (2 replicas, ECR image, `Always` pull), `service.yml` (type LoadBalancer — creates real AWS LB on EKS)
-- **Kind cluster**: 1 control-plane + 1 worker (defined in `kind-config.yaml`)
-
-## AWS / CI Workflow (separate from local)
-
-The CI pipeline at `.github/workflows/ci.yml` pushes to **AWS ECR** (`phoenix-app` repo). It requires GitHub secrets `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` and an existing ECR repo.
-
-**CI does NOT auto-deploy to EKS** — it only pushes to ECR. After CI passes, manually run `kubectl apply -f k8s-manifests/` or restart pods to pull the new image.
-
-CI will **fail** if:
-- AWS secrets are not set in GitHub
-- ECR repo `phoenix-app` doesn't exist in `ap-south-1`
-- Trivy finds CRITICAL/HIGH vulnerabilities (`exit-code: '1'`, filesystem scan mode)
+- **K8s manifests**: `deployment.yml` (2 replicas), `service.yml` (type NodePort on 80→5000, metrics 8080→8000)
+- **Kind cluster**: 1 control-plane + 1 worker (`kind-config.yaml`)
+- **No other services** (no ingress, no HPA, no load balancer controller)
 
 ## Terraform (`infrastructure/`)
 
-Currently configured with `t3.medium` instance type. Creates: VPC + NAT gateway ($~32/mo), EKS cluster ($~73/mo), 2x t3.medium EC2 ($~8/mo), ECR repo. No resources are AWS free tier eligible.
+| Resource | Config |
+|----------|--------|
+| VPC | `vpc.tf` — `enable_nat_gateway = true`, `single_nat_gateway = true` (NAT is second-largest cost after EKS) |
+| EKS | `eks.tf` — `instance_types = ["t3."]` (incomplete value, fix before apply; e.g. `"t3.medium"` or `"t3.micro"`) |
+| ECR | `ecr.tf` — repo name `phoenix-app` |
 
-`enable_nat_gateway = true` with `single_nat_gateway = true` in `vpc.tf` — NAT is required for private subnets but is the second-largest cost after EKS.
+**Cost warning**: No resources are AWS free tier eligible. Rough monthly: VPC+NAT ~$32, EKS ~$73, 2x EC2 ~$8, ECR ~$0.
 
-## `.gitignore` quirks
+## CI Pipeline (`.github/workflows/ci.yml`)
 
-`*.exe` is gitignored, so `kind.exe`/`kubectl.exe` won't commit. `.terraform.lock.hcl`, `terraform.tfstate`, `terraform.tfstate.backup` are also gitignored but exist locally (leftover from a prior run).
+- Trigger: push to `main`
+- Steps: Trivy scan (CRITICAL/HIGH → exit 1 on failure) → Docker build → push to ECR
+- **Deploys to EKS** — after push to ECR, runs `kubectl set image` to update the deployment and waits for rollout.
+- Requires GitHub secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+- ECR repo `phoenix-app` must exist in `ap-south-1`
+
+## `.gitignore` notes
+
+`*.exe` is gitignored — `kind.exe`/`kubectl.exe` won't commit. `.terraform.lock.hcl`, `terraform.tfstate`, `terraform.tfstate.backup` are gitignored but may exist locally as leftovers.

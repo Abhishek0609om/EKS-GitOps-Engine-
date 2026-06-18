@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Advanced Telemetry Trackers
 REQUEST_COUNT = Counter('request_count', 'Total requests handled by Phoenix App', ['endpoint', 'status'])
 REQUEST_LATENCY = Histogram('request_latency_seconds', 'Time spent processing request', ['endpoint'])
-#onemore
+
 # Beautiful modern landing page HTML string
 HTML_TEMPLATE = """
 <!DOCTYPE html>

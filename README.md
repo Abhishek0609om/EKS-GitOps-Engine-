@@ -1,13 +1,17 @@
 # 🚀 Phoenix DevOps Platform
 
-![alt text](Images/arc_1.png)
+![Terraform](https://img.shields.io/badge/IaC-Terraform-844FBA?logo=terraform&logoColor=white)
+![AWS](https://img.shields.io/badge/Cloud-AWS-FF9900?logo=amazonaws&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Orchestration-Kubernetes-326CE5?logo=kubernetes&logoColor=white)
+![Docker](https://img.shields.io/badge/Container-Docker-2496ED?logo=docker&logoColor=white)
+![ArgoCD](https://img.shields.io/badge/GitOps-ArgoCD-EF7B4D?logo=argo&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Monitoring-Prometheus-E6522C?logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Visualization-Grafana-F46800?logo=grafana&logoColor=white)
+![Trivy](https://img.shields.io/badge/Security-Trivy-1904DA?logo=trivy&logoColor=white)
+![Python](https://img.shields.io/badge/Language-Python-3776AB?logo=python&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/CI-CD-2088FF?logo=githubactions&logoColor=white)
 
-//
-kind create cluster --config kind-config.yaml
-docker build -t phoenix-app:local .
-kind load docker-image phoenix-app:local --name phoenix
-kubectl apply -f k8s-manifests/
-//
+![alt text](Images/arc_1.png)
 
 A production-style GitOps platform demonstrating Infrastructure as Code (IaC), Continuous Integration/Continuous Deployment (CI/CD), Kubernetes orchestration, observability, and security scanning.
 
@@ -15,11 +19,10 @@ This project was designed to showcase modern DevOps practices using Terraform, A
 
 ---
 
-# 📑 Table of Contents
+# Table of Contents
 
-- [🚀 Phoenix DevOps Platform](#-phoenix-devops-platform)
-- [📑 Table of Contents](#-table-of-contents)
-- [📌 Project Overview](#-project-overview)
+- [Phoenix DevOps Platform](#-phoenix-devops-platform)
+- [Project Overview](#-project-overview)
 - [🏗️ Architecture Diagram](#️-architecture-diagram)
 - [📸 Project Screenshots](#-project-screenshots)
   - [Terraform Infrastructure](#terraform-infrastructure)
@@ -28,10 +31,9 @@ This project was designed to showcase modern DevOps practices using Terraform, A
   - [GitHub Actions Pipeline](#github-actions-pipeline)
   - [ArgoCD Dashboard](#argocd-dashboard)
   - [Kubernetes Resources](#kubernetes-resources)
-  - [Prometheus Targets](#prometheus-targets)
   - [Grafana Dashboard](#grafana-dashboard)
   - [Load Testing Results](#load-testing-results)
-- [🔧 Technology Stack](#-technology-stack)
+- [Technology Stack](#-technology-stack)
 - [📁 Project Structure](#-project-structure)
 - [🌐 Infrastructure Architecture](#-infrastructure-architecture)
     - [Components](#components)
@@ -84,11 +86,21 @@ The Phoenix DevOps Platform automates the complete software delivery lifecycle:
 
 ---
 
+# 📋 Prerequisites
+
+Before deploying this platform, ensure you have the following tools installed:
+
+- **AWS CLI** — configured with credentials (access key + secret key)
+- **Terraform** — v1.5+
+- **kubectl** — matching your EKS cluster version
+- **Docker** — for building container images
+- **GitHub account** — with secrets configured for CI/CD
+
+---
+
 # 🏗️ Architecture Diagram
 
-> Replace the image below with your final Draw.io architecture export.
-
-![Architecture Diagram](images/architecture-diagram.png)
+![alt text](Images/image-10.png)
 
 ---
 
@@ -96,56 +108,51 @@ The Phoenix DevOps Platform automates the complete software delivery lifecycle:
 
 ## Terraform Infrastructure
 
-![Terraform Apply](images/terraform-apply.png)
+![alt text](Images/image-1.png)
 
 ---
 
 ## AWS EKS Cluster
 
-![EKS Cluster](images/eks-cluster.png)
+![alt text](Images/image-3.png)
 
 ---
 
 ## Amazon ECR Repository
 
-![ECR Repository](images/ecr-repository.png)
-
+![alt text](Images/image.png)
 ---
 
 ## GitHub Actions Pipeline
 
-![GitHub Actions](images/github-actions.png)
+![alt text](Images/image-2.png)
 
 ---
 
 ## ArgoCD Dashboard
 
-![ArgoCD Dashboard](images/argocd-dashboard.png)
+![alt text](Images/image-4.png)
 
 ---
 
 ## Kubernetes Resources
 
-![Kubernetes Resources](images/kubernetes-resources.png)
-
----
-
-## Prometheus Targets
-
-![Prometheus Targets](images/prometheus-targets.png)
-
+![alt text](Images/image-5.png)
 ---
 
 ## Grafana Dashboard
 
-![Grafana Dashboard](images/grafana-dashboard.png)
+![alt text](Images/image-6.png)
 
 ---
 
 ## Load Testing Results
 
-![Load Testing](images/load-test-results.png)
+![alt text](Images/image-7.png)
 
+![alt text](Images/image-8.png)
+
+![alt text](Images/image-9.png)
 ---
 
 # 🔧 Technology Stack

@@ -1,8 +1,8 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Apllication
+kind: Application
 
 metadata:
-  name: phoneix-app
+  name: phoenix-app
   namespace: argocd
 
 spec:

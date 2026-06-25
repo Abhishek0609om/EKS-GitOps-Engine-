@@ -5,8 +5,8 @@ metadata:
   name: phoenix-app-ingress
   annotations:
     kubernetes.io/ingress.class: alb
-    alb.ingress.kubernertes.io/scheme: internet-facing
-    alb.ingress.kunernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
 
 spec:
   rules:

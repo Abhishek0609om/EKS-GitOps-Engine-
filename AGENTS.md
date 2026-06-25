@@ -1,48 +1,39 @@
 # Phoenix DevOps Platform — Agent Guide
 
-## Project scope
+## Before you push, verify
 
-This repo provisions AWS infra via Terraform and deploys a Flask app to it. **There is no code that installs ArgoCD, Prometheus, or Grafana** — those are architectural concepts in the README only. The only Prometheus code is the Python client (`prometheus-client` in `requirements.txt`, imported in `src/app.py:2`) for exporting app metrics. No Helm charts, no install scripts, no Terraform resources exist for them.
-
-## Local Development (Kind — no AWS costs)
-
-```powershell
-kind create cluster --name phoenix --config kind-config.yaml
-docker build -t phoenix-app:local .
-kind load docker-image phoenix-app:local --name phoenix
-kubectl apply -f k8s-manifests/
-kubectl port-forward deployment/phoenix-deployment 5000:5000
-kubectl port-forward svc/phoenix-app-service 8080:8080
+```bash
+git status                          # uncommitted changes?
+git diff HEAD                      # inspect changes
 ```
 
-`k8s-manifests/deployment.yml` currently uses `image: phoenix-app:local` with `imagePullPolicy: IfNotPresent` — already set up for local Kind dev. For EKS deployment, change these to the ECR URL and `Always`.
+Known uncommitted fixes exist in the working tree (ahead of `origin/main` by 1 commit). If they look clean, push them.
+
+## AWS-Only Project
+
+This project targets **EKS on AWS only** — no Kind/local clusters. `deployment.yaml` already uses the ECR URL with `imagePullPolicy: Always`, which is correct for EKS.
 
 ## Architecture
 
-- **App**: `src/app.py` — Flask on `:5000`, Prometheus `/metrics` endpoint on `:8000`. Unused import: `jsonify` on line 1.
-- **Docker**: Multi-stage build (`python:3.11-slim`), exposes 5000/8000
-- **K8s manifests**: `deployment.yml` (2 replicas), `service.yml` (type NodePort on 80→5000, metrics 8080→8000)
-- **Kind cluster**: 1 control-plane + 1 worker (`kind-config.yaml`)
-- **No other services** (no ingress, no HPA, no load balancer controller)
+- **App**: `src/app.py` — Flask on `:5000`, Prometheus `/metrics` on `:8000` (via `start_http_server`, not a Flask route). Unused import claim in old docs was wrong — it uses `render_template_string`.
+- **Docker**: Multi-stage `python:3.11-slim`, exposes 5000/8000. Missing `.dockerignore`.
+- **K8s manifests**: `deployment.yaml` (2 replicas, resource limits), `service.yaml` (NodePort 80→5000, 8080→8000), `ingress.yaml` (ALB via AWS LB Controller, host-based routing, HTTP only).
+- **Terraform** (apply from `infrastructure/`): VPC (3 AZs, 1 NAT gateway), EKS (t3.micro, v1.30 — EOL), ECR (`phoenix-app`). No Terraform backend configured. No ALB resource in Terraform — the ingress YAML handles it.
 
-## Terraform (`infrastructure/`)
-
-| Resource | Config |
-|----------|--------|
-| VPC | `vpc.tf` — `enable_nat_gateway = true`, `single_nat_gateway = true` (NAT is second-largest cost after EKS) |
-| EKS | `eks.tf` — `instance_types = ["t3."]` (incomplete value, fix before apply; e.g. `"t3.medium"` or `"t3.micro"`) |
-| ECR | `ecr.tf` — repo name `phoenix-app` |
-
-**Cost warning**: No resources are AWS free tier eligible. Rough monthly: VPC+NAT ~$32, EKS ~$73, 2x EC2 ~$8, ECR ~$0.
-
-## CI Pipeline (`.github/workflows/ci.yml`)
+## CI Pipeline (`.github/workflows/ci.yaml`)
 
 - Trigger: push to `main`
-- Steps: Trivy scan (CRITICAL/HIGH → exit 1 on failure) → Docker build → push to ECR
-- **Deploys to EKS** — after push to ECR, runs `kubectl set image` to update the deployment and waits for rollout.
+- Steps: Trivy scan (CRITICAL/HIGH → exit 1) → Docker build → push to ECR → update `deployment.yaml` image tag → commit + push back (message includes `[skip ci]`)
+- **Does NOT deploy to EKS** — no `kubectl` step. The app is never updated on the cluster after CI runs. If using ArgoCD, it would sync from the updated YAML in the repo, but ArgoCD is not installed by this repo.
 - Requires GitHub secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
 - ECR repo `phoenix-app` must exist in `ap-south-1`
 
-## `.gitignore` notes
+## Cost
 
-`*.exe` is gitignored — `kind.exe`/`kubectl.exe` won't commit. `.terraform.lock.hcl`, `terraform.tfstate`, `terraform.tfstate.backup` are gitignored but may exist locally as leftovers.
+No AWS free tier. Roughly: VPC+NAT ~$32, EKS ~$73, 2x EC2 ~$8, ECR ~$0/mo.
+
+## Git configs (from committed files)
+
+- ArgoCD Application in `argocd/application.yml` points to a **different repo** (`EKS-GitOps-Engine-`). Verify intent.
+- Monitoring Helm values: `monitoring/prometheus/values.yaml`, `monitoring/grafana/values.yaml`, `helm/argocd/values.yaml` — these are chart values, not install scripts. No code installs these tools.
+- `.gitignore`: `*.exe`, `.terraform/`, `terraform.tfstate*`

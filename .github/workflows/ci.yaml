@@ -65,6 +65,6 @@ jobs:
 
           git add k8s-manifests/deployment.yaml
 
-          git commit -m "update images version" 
+          git commit -m "update images version [skip ci]" 
 
           git push 

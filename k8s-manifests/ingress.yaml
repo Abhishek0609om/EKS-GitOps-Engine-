@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: phoenix-app-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernertes.io/scheme: internet-facing
+    alb.ingress.kunernetes.io/target-type: ip
+
+spec:
+  rules:
+    - host: phoenix-app.abhishek0609om.com
+      http:
+        paths:
+        - path: /
+          pathType: prefix
+          backend:
+            service:
+              name: phoenix-app-service
+              port:
+                number: 80

@@ -1,0 +1,12 @@
+grafana: 
+  enabled: true
+
+  service:
+    type: LoadBalancer
+
+  presistence:
+    enabled: true
+    size: 5Gi
+
+  adminUser: admin 
+  

@@ -1,12 +1,15 @@
-grafana: 
+grafana:
+
   enabled: true
 
-  service:
-    type: LoadBalancer
+  replicas: 1
 
-  persistence:
-    enabled: true
-    size: 5Gi
+  resources:
 
-  adminUser: admin 
-  
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+    limits:
+      cpu: 200m
+      memory: 256Mi

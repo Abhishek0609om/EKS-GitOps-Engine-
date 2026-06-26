@@ -9,7 +9,3 @@ output "cluster_endpoint" {
 output "ecr_repository_url" {
   value = aws_ecr_repository.app.repository_url
 }
-
-output "alb_dns" {
-  value = aws_lb.phoenix.dns_name
-}

@@ -1,5 +1,4 @@
-# Phoenix DevOps Platform — Agent Guide
-
+# Phoenix DevOps Platform — Agent Guid
 ## Before you push, verify
 
 ```bash

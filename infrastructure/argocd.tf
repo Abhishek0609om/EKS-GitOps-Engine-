@@ -12,6 +12,8 @@ resource "helm_release" "argocd" {
 
   version = "7.7.7"
 
+  replace = true
+
   values = [
     file("../helm/argocd/values.yaml")
   ]

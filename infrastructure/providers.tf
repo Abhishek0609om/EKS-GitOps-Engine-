@@ -14,6 +14,14 @@ terraform {
 
   }
 
+  backend "s3" {
+    bucket         = "phoenix-tfstate-095055159123"
+    key            = "phoenix-app/terraform.tfstate"
+    region         = "ap-south-1"
+    dynamodb_table = "phoenix-tfstate-lock"
+    encrypt        = true
+  }
+
 }
 
 

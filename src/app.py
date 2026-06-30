@@ -27,7 +27,7 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <div class="card">
-        <h1>🦅 Phoenix Application Grid v2</h1>
+        <h1>🦅 Phoenix Application Grid v3</h1>
         <p>Your high-traffic GitOps cluster node is serving live requests perfectly.</p>
         <span class="badge">System Healthy</span>
         <div class="footer">Server Timestamp: {{ timestamp }}</div>
@@ -57,6 +57,4 @@ if __name__ == '__main__':
     # Start primary user traffic routing web app on port 5000
     app.run(host='0.0.0.0', port=5000)
 
-# trigger-ci
 
-# trigger-ci

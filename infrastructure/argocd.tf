@@ -20,34 +20,14 @@ resource "helm_release" "argocd" {
 
 }
 
-resource "kubernetes_manifest" "argocd_application" {
+resource "null_resource" "argocd_application" {
   depends_on = [helm_release.argocd]
 
-  manifest = {
-    apiVersion = "argoproj.io/v1alpha1"
-    kind       = "Application"
-    metadata = {
-      name      = "phoenix-app"
-      namespace = "argocd"
-    }
-    spec = {
-      project = "default"
-      source = {
-        repoURL        = "https://github.com/Abhishek0609om/phoenix-manifests-.git"
-        targetRevision = "main"
-        path           = "./"
-      }
-      destination = {
-        server    = "https://kubernetes.default.svc"
-        namespace = "default"
-      }
-      syncPolicy = {
-        automated = {
-          prune    = true
-          selfHeal = true
-        }
-        syncOptions = ["CreateNamespace=true"]
-      }
-    }
+  triggers = {
+    application_yaml = filemd5("../argocd/application.yaml")
+  }
+
+  provisioner "local-exec" {
+    command = "aws eks update-kubeconfig --name phoenix-cluster --region ap-south-1 && kubectl apply -f ../argocd/application.yaml"
   }
 }

@@ -1,4 +1,4 @@
-# 🚀 Phoenix DevOps Platform
+﻿# 🚀 Phoenix DevOps Platform
 
 ![Terraform](https://img.shields.io/badge/IaC-Terraform-844FBA?logo=terraform&logoColor=white)
 ![AWS](https://img.shields.io/badge/Cloud-AWS-FF9900?logo=amazonaws&logoColor=white)
@@ -504,5 +504,4 @@ DevOps | Cloud | Kubernetes | AWS | Terraform | GitOps
 - Monitoring with Prometheus and Grafana
 - Containerized Python application
 - Load-tested and validated deployment workflow
-t r i g g e r  
- 
+

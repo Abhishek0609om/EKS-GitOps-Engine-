@@ -1,6 +1,6 @@
 resource "helm_release" "argocd" {
-
-  name = "argocd"
+  depends_on = [null_resource.helm_repos]
+  name       = "argocd"
 
   namespace = "argocd"
 
@@ -20,8 +20,19 @@ resource "helm_release" "argocd" {
 
 }
 
+resource "null_resource" "helm_repos" {
+  triggers = {
+    always_run = timestamp()
+  }
+  provisioner "local-exec" {
+    command     = "helm repo add argo https://argoproj.github.io/argo-helm; helm repo add prometheus-community https://prometheus-community.github.io/helm-charts; helm repo update"
+    interpreter = ["powershell", "-command"]
+  }
+}
+
 resource "null_resource" "argocd_application" {
-  depends_on = [helm_release.argocd]
+  depends_on = [helm_release.argocd, null_resource.helm_repos]
+
 
   triggers = {
     application_yaml = filemd5("../argocd/application.yaml")

@@ -9,5 +9,6 @@ resource "helm_release" "prometheus_stack" {
 
   values = [file("../monitoring/kube-prom-stack-values.yaml")]
 
-  depends_on = [module.eks]
+  depends_on = [module.eks, null_resource.helm_repos]
+
 }

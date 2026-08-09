@@ -1,0 +1,53 @@
+name: phoniex azure  CI pipeline 
+on: 
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-ship:
+    name: build, Scan, and Ship container to ACR 
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: azure-login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: login to ACR
+        run: |
+          az acr login --name phoenixacr095055159123
+
+      - name: Run TRIVY Scan 
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          exit-code: 1
+          severity: 'CRITICAL,HIGH'
+
+      - name: Build and push to ACR
+        env:
+          ACR_LOGIN_SERVER: phoenixacr095055159123.azurecr.io
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ACR_LOGIN_SERVER/phoenix-app:$IMAGE_TAG .
+
+          docker push $ACR_LOGIN_SERVER/phoenix-app:$IMAGE_TAG
+
+      - name: update the azure deployment.yaml
+        run: |
+          sed -i "s|image: .*|image: phoenixacr095055159123.azurecr.io/phoenix-app:${{ github.sha }}|" \
+          azure/k8s-manifests/deployment.yaml
+
+      - name: push to azure manifest repo
+        run: |
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/Abhishek0609om/phoenix-manifests-azure.git
+          cp azure/k8s-manifests/* phoenix-manifests-azure/
+          cd phoenix-manifests-azure
+          git add .
+          git commit -m "update images version ${{ github.sha }}"
+          git push 

@@ -15,7 +15,7 @@ resource "helm_release" "argocd" {
   replace = true
 
   values = [
-    file("../helm/argocd/values.yaml")
+    file("../../helm/argocd/values.yaml")
   ]
 
 }
@@ -39,6 +39,6 @@ resource "null_resource" "argocd_application" {
   }
 
   provisioner "local-exec" {
-    command = "aws eks update-kubeconfig --name phoenix-cluster --region ap-south-1 && kubectl apply -f ../argocd/application.yaml"
+    command = "az aks get-credentials --resource-group phoenix-rg --name phoenix-aks && kubectl apply -f ../argocd/application.yaml"
   }
 }

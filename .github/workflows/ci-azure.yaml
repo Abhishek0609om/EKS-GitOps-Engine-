@@ -4,7 +4,7 @@ on:
     branches: [ "main" ]
     paths:
       - "azure/**"
-      - "Dockerfile/**"
+      - "Dockerfile"
       - "src/**"
       - ".github/workflows/ci-azure.yaml"
 
@@ -58,6 +58,8 @@ jobs:
           git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/Abhishek0609om/phoenix-manifests-azure.git
           cp azure/k8s-manifests/* phoenix-manifests-azure/
           cd phoenix-manifests-azure
+          git config user.name github-actions
+          git config user.email github-actions@github.com
           git add .
           git commit -m "update images version ${{ github.sha }}"
           git push 

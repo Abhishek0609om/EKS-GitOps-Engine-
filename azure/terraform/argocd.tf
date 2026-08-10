@@ -39,6 +39,6 @@ resource "null_resource" "argocd_application" {
   }
 
   provisioner "local-exec" {
-    command = "az aks get-credentials --resource-group phoenix-rg --name phoenix-aks && kubectl apply -f ../argocd/application.yaml"
+    command = "az aks get-credentials --resource-group phoenix-rg --name phoenix-aks --overwrite-existing && kubectl apply -f ../argocd/application.yaml"
   }
 }

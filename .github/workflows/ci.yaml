@@ -8,7 +8,7 @@ on:
       - "helm/**"
       - "Dockerfile"
       - "src/**"
-      - ". github/workflows/ci.yaml"
+      - ".github/workflows/ci.yaml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

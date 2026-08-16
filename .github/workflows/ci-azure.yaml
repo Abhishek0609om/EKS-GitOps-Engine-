@@ -1,16 +1,16 @@
 name: phoniex azure  CI pipeline 
-on: 
-  push:
-    branches: [ "main" ]
-    paths:
-      - "azure/**"
-      - "Dockerfile"
-      - "src/**"
-      - ".github/workflows/ci-azure.yaml"
+# on: 
+#   push:
+#     branches: [ "main" ]
+#     paths:
+#       - "azure/**"
+#       - "Dockerfile"
+#       - "src/**"
+#       - ".github/workflows/ci-azure.yaml"
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: true
 
 
 jobs:

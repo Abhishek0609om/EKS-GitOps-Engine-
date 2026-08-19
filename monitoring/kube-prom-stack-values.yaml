@@ -4,11 +4,11 @@ prometheus:
     scrapeInterval: 30s
     resources:
       requests:
-        cpu: 50m
-        memory: 128Mi
-      limits:
-        cpu: 200m
+        cpu: 100m
         memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 1024Mi
     serviceMonitorSelectorNilUsesHelmValues: false
 
 grafana:
@@ -17,11 +17,11 @@ grafana:
   adminPassword: admin123
   resources:
     requests:
-      cpu: 50m
-      memory: 128Mi
+      cpu: 100m
+      memory: 256MiMi
     limits:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 1000m
+      memory: 512Mi
   sidecar:
     dashboards:
       enabled: true

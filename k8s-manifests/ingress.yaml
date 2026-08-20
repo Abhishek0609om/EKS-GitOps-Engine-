@@ -9,14 +9,14 @@ metadata:
     alb.ingress.kubernetes.io/target-type: ip
 
 spec:
+  ingressClassName: alb
   rules:
-    - host: phoenix-app.abhishek0609om.com
-      http:
-        paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: phoenix-app-service
-              port:
-                number: 80
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: phoenix-app-service
+            port:
+              number: 80

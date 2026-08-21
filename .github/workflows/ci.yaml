@@ -2,13 +2,7 @@ name: Phoenix Production CI Pipeline
 on:
   push:
     branches: [ "main" ]
-    paths:
-      - "infrastructure/**"
-      - "k8s-manifests/**"
-      - "helm/**"
-      - "Dockerfile"
-      - "src/**"
-      - ".github/workflows/ci.yaml"
+  workflow_dispatch: 
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -76,3 +70,12 @@ jobs:
           git add .
           git commit -m "update image version ${{ github.sha }}"
           git push
+          
+          #  Check if there are actual differences before running git commit
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "New image tag detected! Committing changes..."
+            git commit -m "update image version ${{ github.sha }}"
+            git push origin main
+          else
+            echo "No manifest changes detected. Skipping commit stage safely!"
+          fi

@@ -65,7 +65,7 @@ jobs:
           git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/Abhishek0609om/phoenix-manifests-.git
 
           #update the image tag directly inside the local copy of your k8s-manifests directory 
-          sed -i "s|image: .*|image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|" k8s-manifests/deployment.yaml
+          sed -i "s|image: .*|image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|I" k8s-manifests/deployment.yaml
 
           #copy of updated infrastructure configurations over to you cloned repo folder 
           cp k8s-manifests/* phoenix-manifests-/
@@ -79,5 +79,5 @@ jobs:
 
           #push 
           git add .
-          git commit -m "chore: update application container image version to $IMAGE_TAG [skip ci]"
+          git commit --allow-empty -m "chore: update application container image version to $IMAGE_TAG [skip ci]"
           git push origin main 

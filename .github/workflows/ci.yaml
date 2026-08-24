@@ -52,21 +52,32 @@ jobs:
           
           # Push the Docker image to ECR
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-      
-      # Update the Kubernetes manifest with the new image tag
-      - name: Update deployment.yaml
-        run: |
-          sed -i "s|image: .*|image: ${{ steps.login-ecr.outputs.registry }}/phoenix-app:${{ github.sha }}|" \
-            k8s-manifests/deployment.yaml
 
-      # Push the updated manifest to the manifests repo (two-repo GitOps)
-      - name: Push to manifests repo
+
+      # Corrected manifest Update and Cross-Repo Push step
+      - name: syn and push manifest Repo 
+        env:
+          ECR_REGISTRY: ${{ step.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: phoenix-app
+          IMAGE_TAG: ${{ github.sha }}
         run: |
+          #clone and dedicated manifest repository 
           git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/Abhishek0609om/phoenix-manifests-.git
+
+          #update the image tag directly inside the local copy of your k8s-manifests directory 
+          sed -i "s|image: .*|image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|" k8s-manifests/deployment.yaml
+
+          #copy of updated infrastructure configurations over to you cloned repo folder 
           cp k8s-manifests/* phoenix-manifests-/
+
+          #change directory INTO the repository to run Git management commands
           cd phoenix-manifests-
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+
+          #Configure Git identity credentials inside the active directory
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          #push 
           git add .
-          git commit -m "update image version ${{ github.sha }}"
-          git push
+          git commit -m "chore: update application container image version to $IMAGE_TAG [skip ci]"
+          git push origin main 

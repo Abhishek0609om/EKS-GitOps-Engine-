@@ -57,7 +57,7 @@ jobs:
       # Corrected manifest Update and Cross-Repo Push step
       - name: syn and push manifest Repo 
         env:
-          ECR_REGISTRY: ${{ step.login-ecr.outputs.registry }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: phoenix-app
           IMAGE_TAG: ${{ github.sha }}
         run: |
